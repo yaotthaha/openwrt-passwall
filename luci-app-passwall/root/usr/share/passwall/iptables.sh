@@ -20,8 +20,8 @@ IPSET_BLACKLIST6="blacklist6"
 IPSET_WHITELIST6="whitelist6"
 IPSET_BLOCKLIST6="blocklist6"
 
-START_SCRIPT=$(uci get passwall.@global[0].start_script 2>/dev/null)
-STOP_SCRIPT=$(uci get passwall.@global[0].stop_script 2>/dev/null)
+START_SCRIPT=$(uci -q get passwall.@global[0].start_script 2>/dev/null)
+STOP_SCRIPT=$(uci -q get passwall.@global[0].stop_script 2>/dev/null)
 
 FORCE_INDEX=2
 
