@@ -40,6 +40,8 @@ start() {
 	set_lock
 	[ $? == 1 ] && $APP_FILE echolog "脚本已经在运行，不重复运行，退出." && exit 0
 	$APP_FILE start
+	START_SCRIPT=$(uci get passwall.@global[0].start_script 2>/dev/null)
+	[ $START_SCRIPT != "" ] && $START_SCRIPT
 	unset_lock
 }
 
@@ -47,6 +49,8 @@ stop() {
 	unlock
 	set_lock
 	[ $? == 1 ] && $APP_FILE echolog "停止脚本等待超时，不重复运行，退出." && exit 0
+	STOP_SCRIPT=$(uci get passwall.@global[0].stop_script 2>/dev/null)
+	[ $STOP_SCRIPT != "" ] && $STOP_SCRIPT
 	$APP_FILE stop
 	unset_lock
 }
@@ -54,8 +58,12 @@ stop() {
 restart() {
 	set_lock
 	[ $? == 1 ] && $APP_FILE echolog "脚本已经在运行，不重复运行，退出." && exit 0
+	STOP_SCRIPT=$(uci get passwall.@global[0].stop_script 2>/dev/null)
+	[ $STOP_SCRIPT != "" ] && $STOP_SCRIPT
 	$APP_FILE stop
 	$APP_FILE start
+	START_SCRIPT=$(uci get passwall.@global[0].start_script 2>/dev/null)
+	[ $START_SCRIPT != "" ] && $START_SCRIPT
 	unset_lock
 }
 

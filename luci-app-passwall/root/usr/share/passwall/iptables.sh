@@ -20,6 +20,9 @@ IPSET_BLACKLIST6="blacklist6"
 IPSET_WHITELIST6="whitelist6"
 IPSET_BLOCKLIST6="blocklist6"
 
+START_SCRIPT=$(uci get passwall.@global[0].start_script 2>/dev/null)
+STOP_SCRIPT=$(uci get passwall.@global[0].stop_script 2>/dev/null)
+
 FORCE_INDEX=2
 
 . /lib/functions/network.sh
@@ -1171,6 +1174,7 @@ gen_include() {
 		${_ipt}-save -t $2 | grep "PSW" | grep -v "\-j PSW$" | grep -v "socket \-j PSW_DIVERT$" | sed -e "s/^-A \(OUTPUT\|PREROUTING\)/-I \1 1/"
 		echo 'COMMIT'
 	}
+	[ $STOP_SCRIPT != "" ] && echo $STOP_SCRIPT >> $FWI
 	cat <<-EOF >> $FWI
 		$ipt-save -c | grep -v "PSW" | $ipt-restore -c
 		$ipt-restore -n <<-EOT
@@ -1214,6 +1218,7 @@ gen_include() {
 			[ ! -z "\${WAN6_IP}" ] && $ip6t_m -R PSW \$PR_INDEX $(comment "WAN6_IP_RETURN") -d "\${WAN6_IP}" -j RETURN
 		fi
 	EOF
+	[ $START_SCRIPT != "" ] && echo $START_SCRIPT >> $FWI
 	return 0
 }
 
